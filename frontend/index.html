@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ERP Tekar — Sistema de Gestão para Autocenter. Gerencie clientes, veículos e ordens de serviço com eficiência." />
+  <title>ERP Tekar — Autocenter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ── SIDEBAR ───────────────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-icon">⚙</span>
+        <span class="logo-text">TEKAR</span>
+      </div>
+      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Fechar menu">✕</button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item active" data-page="dashboard" id="nav-dashboard">
+        <span class="nav-icon">◈</span>
+        <span class="nav-label">Dashboard</span>
+      </a>
+      <a class="nav-item" data-page="clientes" id="nav-clientes">
+        <span class="nav-icon">◉</span>
+        <span class="nav-label">Clientes</span>
+      </a>
+      <a class="nav-item" data-page="veiculos" id="nav-veiculos">
+        <span class="nav-icon">◎</span>
+        <span class="nav-label">Veículos</span>
+      </a>
+      <a class="nav-item" data-page="os" id="nav-os">
+        <span class="nav-icon">◇</span>
+        <span class="nav-label">Ordens de Serviço</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <span class="version">v1.0 — 2026</span>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ─────────────────────────────────────────────── -->
+  <div class="main-wrapper" id="mainWrapper">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <button class="hamburger" id="hamburger" aria-label="Abrir menu">☰</button>
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-right">
+        <div class="status-indicator" id="statusIndicator">
+          <span class="dot dot-ok"></span>
+          <span id="statusText">API Conectada</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- TOAST -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- PAGES -->
+    <main class="page-content">
+
+      <!-- ── DASHBOARD ──────────────────────────────────────── -->
+      <section class="page active" id="page-dashboard">
+        <div class="page-header">
+          <h1>Dashboard</h1>
+          <button class="btn btn-ghost" onclick="loadDashboard()">↺ Atualizar</button>
+        </div>
+
+        <div class="kpi-grid" id="kpiGrid">
+          <div class="kpi-card" id="kpi-faturamento">
+            <div class="kpi-icon">R$</div>
+            <div class="kpi-body">
+              <span class="kpi-label">Faturamento Total</span>
+              <span class="kpi-value" id="kpiFaturamento">—</span>
+            </div>
+          </div>
+          <div class="kpi-card" id="kpi-clientes">
+            <div class="kpi-icon">◉</div>
+            <div class="kpi-body">
+              <span class="kpi-label">Clientes</span>
+              <span class="kpi-value" id="kpiClientes">—</span>
+            </div>
+          </div>
+          <div class="kpi-card" id="kpi-veiculos">
+            <div class="kpi-icon">◎</div>
+            <div class="kpi-body">
+              <span class="kpi-label">Veículos</span>
+              <span class="kpi-value" id="kpiVeiculos">—</span>
+            </div>
+          </div>
+          <div class="kpi-card" id="kpi-os-abertas">
+            <div class="kpi-icon">◇</div>
+            <div class="kpi-body">
+              <span class="kpi-label">OS Abertas</span>
+              <span class="kpi-value" id="kpiOsAbertas">—</span>
+            </div>
+          </div>
+          <div class="kpi-card" id="kpi-os-andamento">
+            <div class="kpi-icon" style="color:var(--warning)">⬡</div>
+            <div class="kpi-body">
+              <span class="kpi-label">Em Andamento</span>
+              <span class="kpi-value" id="kpiOsAndamento">—</span>
+            </div>
+          </div>
+          <div class="kpi-card" id="kpi-os-finalizadas">
+            <div class="kpi-icon" style="color:var(--success)">✓</div>
+            <div class="kpi-body">
+              <span class="kpi-label">OS Finalizadas</span>
+              <span class="kpi-value" id="kpiOsFinalizadas">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <h3>Faturamento Mensal</h3>
+              <span class="chart-sub">Últimos 12 meses</span>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="chartFaturamento"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <h3>Status das OS</h3>
+              <span class="chart-sub">Distribuição atual</span>
+            </div>
+            <div class="chart-wrapper chart-wrapper-sm">
+              <canvas id="chartStatus"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <h3>Top Clientes</h3>
+              <span class="chart-sub">Por faturamento</span>
+            </div>
+            <div class="table-mini" id="topClientes">
+              <div class="loading-row">Carregando...</div>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <h3>Serviços Mais Realizados</h3>
+              <span class="chart-sub">Por frequência</span>
+            </div>
+            <div class="table-mini" id="topServicos">
+              <div class="loading-row">Carregando...</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── CLIENTES ───────────────────────────────────────── -->
+      <section class="page" id="page-clientes">
+        <div class="page-header">
+          <h1>Clientes</h1>
+          <button class="btn btn-primary" id="btnNovoCliente">+ Novo Cliente</button>
+        </div>
+
+        <div class="search-bar">
+          <input type="text" id="searchClientes" placeholder="Buscar por nome, telefone, CPF ou ID…" />
+        </div>
+
+        <div class="data-table-wrapper">
+          <table class="data-table" id="tableClientes">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>CPF</th>
+                <th>Cadastrado em</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyClientes">
+              <tr><td colspan="6" class="loading-row">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── VEÍCULOS ───────────────────────────────────────── -->
+      <section class="page" id="page-veiculos">
+        <div class="page-header">
+          <h1>Veículos</h1>
+          <button class="btn btn-primary" id="btnNovoVeiculo">+ Novo Veículo</button>
+        </div>
+
+        <div class="search-bar">
+          <input type="text" id="searchVeiculos" placeholder="Buscar por placa, modelo ou marca…" />
+        </div>
+
+        <div class="data-table-wrapper">
+          <table class="data-table" id="tableVeiculos">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Placa</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Ano</th>
+                <th>Cliente</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyVeiculos">
+              <tr><td colspan="7" class="loading-row">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── ORDENS DE SERVIÇO ──────────────────────────────── -->
+      <section class="page" id="page-os">
+        <div class="page-header">
+          <h1>Ordens de Serviço</h1>
+          <button class="btn btn-primary" id="btnNovaOS">+ Nova OS</button>
+        </div>
+
+        <div class="filter-bar">
+          <button class="filter-btn active" data-status="">Todas</button>
+          <button class="filter-btn" data-status="aberta">Abertas</button>
+          <button class="filter-btn" data-status="em_andamento">Em Andamento</button>
+          <button class="filter-btn" data-status="finalizada">Finalizadas</button>
+          <button class="filter-btn" data-status="cancelada">Canceladas</button>
+        </div>
+
+        <div class="data-table-wrapper">
+          <table class="data-table" id="tableOS">
+            <thead>
+              <tr>
+                <th>OS #</th>
+                <th>Cliente</th>
+                <th>Veículo</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Abertura</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyOS">
+              <tr><td colspan="7" class="loading-row">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ── MODAIS ──────────────────────────────────────────────── -->
+
+  <!-- Modal Genérico -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Modal</h2>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer" id="modalFooter"></div>
+    </div>
+  </div>
+
+  <!-- Modal OS Detail -->
+  <div class="modal-overlay" id="osDetailOverlay">
+    <div class="modal modal-lg" id="osDetailModal">
+      <div class="modal-header">
+        <h2 id="osDetailTitle">OS #</h2>
+        <button class="modal-close" id="osDetailClose">✕</button>
+      </div>
+      <div class="modal-body" id="osDetailBody"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
