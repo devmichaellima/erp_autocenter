@@ -3,16 +3,17 @@ from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+load_dotenv("config/.env")
 
 
 def get_conn():
     return psycopg2.connect(
         dbname=os.getenv("DB_NAME"),
         user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
+        password=os.getenv("DB_PASS"),
         host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
+        port=os.getenv("DB_PORT"),
+        sslmode="require"
     )
 
 def fetch_all(query, params=None):
