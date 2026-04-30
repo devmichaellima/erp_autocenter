@@ -367,4 +367,5 @@ def delete_item(item_id):
 
 if __name__ == '__main__':
     print('ERP TEKAR -- rodando em http://localhost:5000')
+    #app.run(host='0.0.0.0', port=5000)  >> para rodar com ip
     app.run(debug=True, port=5000)
